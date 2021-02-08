@@ -3,77 +3,161 @@
 # Description: Program performs tests on function contrived_func
 # using random testing method
 
+
 from credit_card_validator import credit_card_validator
 import random
-import string
 import unittest
+
 
 class TestCase(unittest.TestCase):
     pass
 
+
 def build_test_func(expected, test_case, func_under_test, message):
     def test(self):
         result = func_under_test(test_case)
-        self.assertEqual(expected, result, message.format(test_case, expected, result))
+        self.assertEqual(expected, result,
+                         message.format(test_case, expected, result))
+
     return test
 
-def generate_testcases(tests_to_generate=100):
+
+def v_card():
+    v_length = [00000000000000, 99999999999999, 000000000000000,
+                999999999999999, 0000000000000000, 9999999999999999]
+    v_length_cases = [0, 2, 4]
+    v_length_choice = random.choice(v_length_cases)
+    v_card_num = "4" + ''.join(str(random.
+                                   randint(v_length[v_length_choice],
+                                           v_length[v_length_choice + 1])))
+
+    return v_card_num
+
+
+def m_card():
+    m_length_1 = [00000000000, 99999999999, 000000000000,
+                  999999999999, 0000000000000, 9999999999999]
+    m_length_2 = [0000000000000, 9999999999999, 00000000000000,
+                  99999999999999, 000000000000000, 999999999999999]
+    m_length_cases = [0, 2, 4]
+    m_length_choice = random.choice(m_length_cases)
+    m_prefix = random.randint(0, 1)
+    if m_prefix == 0:
+        s_prefix = random.randint(2221, 2720)
+        m_card_num = str(s_prefix) + ''.join(str(random.
+                         randint(m_length_1[m_length_choice],
+                                 m_length_1[m_length_choice + 1])))
+    else:
+        s_prefix = random.randint(51, 55)
+        m_card_num = str(s_prefix) + ''.join(str(random.
+                         randint(m_length_2[m_length_choice],
+                                 m_length_2[m_length_choice + 1])))
+
+    return m_card_num
+
+
+def e_card():
+    e_length = [0000000000000, 9999999999999, 00000000000000,
+                99999999999999, 000000000000000, 999999999999999]
+    e_length_cases = [0, 2, 4]
+    e_length_choice = random.choice(e_length_cases)
+    e_card_num = "4" + ''.join(str(random.
+                       randint(e_length[e_length_choice],
+                               e_length[e_length_choice + 1])))
+
+    return e_card_num
+
+
+# def rnd_card():
+#     c_length = [00000000000000, 99999999999999, 000000000000000,
+#                 999999999999999, 0000000000000000, 9999999999999999,
+#                 00000000000000000, 99999999999999999]
+#     c_length_cases = [0, 2, 4, 6]
+#     c_length_choice = random.choice(c_length_cases)
+#     c_card_num = "4" + ''.join(str(random.
+#                        randint(c_length[c_length_choice],
+#                                c_length[c_length_choice + 1])))
+#
+#     return c_card_num
+
+def luhn_calc(c_num, c_len):
+
+    if len(c_num) == c_len:
+        sum = 0
+        for i in range(c_len-1):
+            if i % 2 == 0:
+                sum = sum + int(c_num[i])
+            else:
+                sum += int(c_num)
+        sum = sum % 10
+        sum = (c_len - sum)
+        if c_num == sum:
+            return True
+        else:
+            return False
+    else:
+        return False
+
+
+def generate_testcases(tests_to_generate=10000):
     for i in range(tests_to_generate):
         expected = True
-        # visa_prefix
-        v_prefix = random.randint(4)
-        m_prefix_set = random.randint(51, 55)
-        m_prefix_set2 = random.randint(2221, 2720)
-        ae_prefix_start = random.randint(34, 34)
-        # length test
-        # length_test = [0, 14, 15, 16, 17]
-        length_test = [16]
-        # 50% chance of generating an edge case
-        # odds = random.randint(0,1)
-        # if odds == 1:
-        #     length = random.choice(edge_cases)
-        # else:
-        #     # Random length
-        #     length = random.randint(0,30)
-
-
-
-        # Random number of lower case
-        low = random.randint(0, length)
-        # Random number of upper case
-        up = random.randint(0, length - low)
-        # Random number of numbers
-        dig = random.randint(0, length - low - up)
-        # Random number of symbols
-        sym = random.randint(0, length - low - up - dig)
-        # Determine final length of string
-        length = low + up + dig + sym
-        # Set expected result based on specification
-        if length < 15 or length > 20:
-            expected = False
-        if low < 1 or up < 1 or dig < 1 or sym < 1:
-            expected = False
-        # Generate credit card
-        pwd = gen_creditcard(length, low, up, dig, sym)
-        # Build test function
+        c_case_choice = random.randint(1, 4)
         message = 'Test case: {}, Expected: {}, Result: {}'
-        new_test = build_test_func(expected, pwd, check_pwd, message)
-        setattr(TestCase, 'test_{}'.format(pwd), new_test)
+        if c_case_choice == 1:
+            v_crd = v_card()
+            if len(v_crd) == 16:
+                if luhn_calc(v_crd):
+                    expected = True
+                    print('v_card True')
+                else:
+                    expected = False
+            else:
+                expected = False
+            # if luhn_calc(v_crd, 16):
+            #     expected = True
+            # else:
+            #     expected = False
+            new_test = build_test_func(expected, v_crd, credit_card_validator, message)
+            setattr(TestCase, 'test_{}'.format(v_crd), new_test)
+        if c_case_choice == 2:
+            m_crd = m_card()
+            if len(m_crd) == 16:
+                if luhn_calc(m_crd):
+                    expected = True
+                    print('m_card True')
+                else:
+                    expected = False
+            else:
+                expected = False
+            # if luhn_calc(m_crd, 16):
+            #     expected = True
+            # else:
+            #     expected = False
+            new_test = build_test_func(expected, m_crd, credit_card_validator, message)
+            setattr(TestCase, 'test_{}'.format(m_crd), new_test)
+        if c_case_choice == 3:
+            e_crd = e_card()
+            if len(e_crd) == 15:
+                if luhn_calc(e_crd):
+                    expected = True
+                    print('e_card True')
+                else:
+                    expected = False
+            else:
+                expected = False
+            # if luhn_calc(e_crd, 15):
+            #     expected = True
+            # else:
+            #     expected = False
+            new_test = build_test_func(expected, m_crd, credit_card_validator, message)
+            setattr(TestCase, 'test_{}'.format(m_crd), new_test)
+        if c_case_choice == 4:
+            r_crd = rnd_card()
+            expected = False
+            new_test = build_test_func(expected, r_crd, credit_card_validator, message)
+            setattr(TestCase, 'test_{}'.format(r_crd), new_test)
 
-def gen_creditcard(length=16, low=1, up=1, dig=1, sym=1, spa=False):
-    lower_case = string.ascii_lowercase
-    upper_case = string.ascii_uppercase
-    digits = string.digits
-    all_pos = lower_case + upper_case + digits + symbols
-
-    pwd = ''
-    pwd = pwd + ''.join(random.choice(lower_case) for i in range(low))
-    pwd = pwd + ''.join(random.choice(upper_case) for i in range(up))
-    pwd = pwd + ''.join(random.choice(digits) for i in range(dig))
-    pwd = pwd + ''.join(random.choice(symbols) for i in range(sym))
-    pwd = pwd + ''.join(random.choice(all_pos) for i in range(length - len(pwd)))
-
-    return ''.join(random.sample(pwd,len(pwd)))
 
 if __name__ == '__main__':
     generate_testcases()
