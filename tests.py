@@ -3,162 +3,122 @@
 # Description: Program performs tests on function contrived_func
 # using random testing method
 
-
+# Function being tested
 from credit_card_validator import credit_card_validator
 import random
 import unittest
 
 
 class TestCase(unittest.TestCase):
-    pass
+    """
+    Class contains methods that generate random numbers for Visa,
+    Master, and American Express credit cards. Credit card numbers
+    are generated with lengths of 14 - 17, set prefixs, and random.
+    Visa credit card:
+     prefix: 4
+    Master credit card:
+     prefix: 51-55
+     prefix: 2221 - 2720
+    American Express:
+     prefix: 34
+     prefix: 37
+    """
 
+    def test_generate_testcases(self):
+        """
+        Method iterates through each type of credit card with correct
+        length and performs 100000 iterations. A random test is
+        performed on different lengths and 100000 iterations
+        """
+        c_length = [14, 15, 16, 17]
+        for i in range(0, 4):
+            for j in range(100000):
+                if i == 0:
+                    credit_card_num = self.v_card(15)
+                elif i == 1:
+                    credit_card_num = self.m_card(14)
+                elif i == 2:
+                    credit_card_num = self.e_card(13)
+                elif i == 3:
+                    c_choice = random.choice(c_length)  # chooses length
+                    credit_card_num = self.rnd_card(c_choice)
+                # passed credit card number into test function
+                credit_card_validator(credit_card_num)
+                print('Failure: {} should be {}'.format(credit_card_num, True))
 
-def build_test_func(expected, test_case, func_under_test, message):
-    def test(self):
-        result = func_under_test(test_case)
-        self.assertEqual(expected, result,
-                         message.format(test_case, expected, result))
+    def v_card(self, v_len):
+        """
+        Generates and returns Visa credit card, length 16, and prefix 4
+        """
+        v_num = ''
+        for j in range(v_len):
+            # generates and combines credit card number
+            v_num = v_num + ''.join(str(random.randint(0, 9)))
+            # combines prefix and generated numbers
+        v_card_num = "4" + ''.join(v_num)
+        return v_card_num
 
-    return test
-
-
-def v_card():
-    v_length = [00000000000000, 99999999999999, 000000000000000,
-                999999999999999, 0000000000000000, 9999999999999999]
-    v_length_cases = [0, 2, 4]
-    v_length_choice = random.choice(v_length_cases)
-    v_card_num = "4" + ''.join(str(random.
-                                   randint(v_length[v_length_choice],
-                                           v_length[v_length_choice + 1])))
-
-    return v_card_num
-
-
-def m_card():
-    m_length_1 = [00000000000, 99999999999, 000000000000,
-                  999999999999, 0000000000000, 9999999999999]
-    m_length_2 = [0000000000000, 9999999999999, 00000000000000,
-                  99999999999999, 000000000000000, 999999999999999]
-    m_length_cases = [0, 2, 4]
-    m_length_choice = random.choice(m_length_cases)
-    m_prefix = random.randint(0, 1)
-    if m_prefix == 0:
-        s_prefix = random.randint(2221, 2720)
-        m_card_num = str(s_prefix) + ''.join(str(random.
-                         randint(m_length_1[m_length_choice],
-                                 m_length_1[m_length_choice + 1])))
-    else:
-        s_prefix = random.randint(51, 55)
-        m_card_num = str(s_prefix) + ''.join(str(random.
-                         randint(m_length_2[m_length_choice],
-                                 m_length_2[m_length_choice + 1])))
-
-    return m_card_num
-
-
-def e_card():
-    e_length = [0000000000000, 9999999999999, 00000000000000,
-                99999999999999, 000000000000000, 999999999999999]
-    e_length_cases = [0, 2, 4]
-    e_length_choice = random.choice(e_length_cases)
-    e_card_num = "4" + ''.join(str(random.
-                       randint(e_length[e_length_choice],
-                               e_length[e_length_choice + 1])))
-
-    return e_card_num
-
-
-# def rnd_card():
-#     c_length = [00000000000000, 99999999999999, 000000000000000,
-#                 999999999999999, 0000000000000000, 9999999999999999,
-#                 00000000000000000, 99999999999999999]
-#     c_length_cases = [0, 2, 4, 6]
-#     c_length_choice = random.choice(c_length_cases)
-#     c_card_num = "4" + ''.join(str(random.
-#                        randint(c_length[c_length_choice],
-#                                c_length[c_length_choice + 1])))
-#
-#     return c_card_num
-
-def luhn_calc(c_num, c_len):
-
-    if len(c_num) == c_len:
-        sum = 0
-        for i in range(c_len-1):
-            if i % 2 == 0:
-                sum = sum + int(c_num[i])
-            else:
-                sum += int(c_num)
-        sum = sum % 10
-        sum = (c_len - sum)
-        if c_num == sum:
-            return True
+    def m_card(self, m_len):
+        """
+        Generates and returns Master credit card, length 16,
+        and random prefixes from 51-55 and 2221-2720.
+        """
+        # 50% choice for choosing initial prefix
+        m_prefix = random.randint(0, 1)
+        if m_prefix == 0:
+            s_prefix = random.randint(2221, 2720)
+            m_num = ''
+            for j in range(m_len-2):
+                # generates and combines credit card number
+                m_num = m_num + ''.join(str(random.randint(0, 9)))
+            # combines prefix and generated numbers
+            m_card_num = str(s_prefix) + ''.join(m_num)
         else:
-            return False
-    else:
-        return False
+            s_prefix = random.randint(51, 55)
+            m_num = ''
+            for j in range(m_len):
+                # generates and combines credit card number
+                m_num = m_num + ''.join(str(random.randint(0, 9)))
+            # combines prefix and generated numbers
+            m_card_num = str(s_prefix) + ''.join(m_num)
+        return m_card_num
 
+    def e_card(self, e_len):
+        """
+        Generates and returns American Express credit card,
+        length 16, and random prefixes 34 and 37.
+        """
+        # 50% choice for choosing initial prefix
+        e_prefix = random.randint(0, 1)
+        if e_prefix == 0:
+            e_num = ''
+            for j in range(e_len):
+                # generates and combines credit card number
+                e_num = e_num + ''.join(str(random.randint(0, 9)))
+            # combines prefix and generated numbers
+            e_card_num = "34" + ''.join(e_num)
+        else:
+            e_num = ''
+            for j in range(e_len):
+                # generates and combines credit card number
+                e_num = e_num + ''.join(str(random.randint(0, 9)))
+            # combines prefix and generated numbers
+            e_card_num = "37" + ''.join(e_num)
+        return e_card_num
 
-def generate_testcases(tests_to_generate=10000):
-    for i in range(tests_to_generate):
-        expected = True
-        c_case_choice = random.randint(1, 4)
-        message = 'Test case: {}, Expected: {}, Result: {}'
-        if c_case_choice == 1:
-            v_crd = v_card()
-            if len(v_crd) == 16:
-                if luhn_calc(v_crd):
-                    expected = True
-                    print('v_card True')
-                else:
-                    expected = False
-            else:
-                expected = False
-            # if luhn_calc(v_crd, 16):
-            #     expected = True
-            # else:
-            #     expected = False
-            new_test = build_test_func(expected, v_crd, credit_card_validator, message)
-            setattr(TestCase, 'test_{}'.format(v_crd), new_test)
-        if c_case_choice == 2:
-            m_crd = m_card()
-            if len(m_crd) == 16:
-                if luhn_calc(m_crd):
-                    expected = True
-                    print('m_card True')
-                else:
-                    expected = False
-            else:
-                expected = False
-            # if luhn_calc(m_crd, 16):
-            #     expected = True
-            # else:
-            #     expected = False
-            new_test = build_test_func(expected, m_crd, credit_card_validator, message)
-            setattr(TestCase, 'test_{}'.format(m_crd), new_test)
-        if c_case_choice == 3:
-            e_crd = e_card()
-            if len(e_crd) == 15:
-                if luhn_calc(e_crd):
-                    expected = True
-                    print('e_card True')
-                else:
-                    expected = False
-            else:
-                expected = False
-            # if luhn_calc(e_crd, 15):
-            #     expected = True
-            # else:
-            #     expected = False
-            new_test = build_test_func(expected, m_crd, credit_card_validator, message)
-            setattr(TestCase, 'test_{}'.format(m_crd), new_test)
-        if c_case_choice == 4:
-            r_crd = rnd_card()
-            expected = False
-            new_test = build_test_func(expected, r_crd, credit_card_validator, message)
-            setattr(TestCase, 'test_{}'.format(r_crd), new_test)
+    def rnd_card(self, rnd_len):
+        """
+        Generates and returns random credit of various lengths and
+        prefixes.
+        """
+        rnd_num = ''
+        for j in range(rnd_len):
+            # generates and combines credit card number
+            rnd_num = rnd_num + ''.join(str(random.randint(0, 9)))
+        # combines prefix and generated numbers
+        rnd_card_num = rnd_num
+        return rnd_card_num
 
 
 if __name__ == '__main__':
-    generate_testcases()
     unittest.main()
